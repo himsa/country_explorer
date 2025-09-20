@@ -86,6 +86,7 @@ void main() {
 
         // act & assert
         expect(event1, isNot(equals(event2)));
+        expect(event1.hashCode, isNot(equals(event2.hashCode)));
       });
 
       test('should have correct props', () {

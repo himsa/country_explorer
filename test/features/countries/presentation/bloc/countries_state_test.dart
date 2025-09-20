@@ -5,18 +5,6 @@ import 'package:countries_explorer/features/countries/presentation/bloc/countrie
 
 void main() {
   group('CountriesState', () {
-    const tCountry = Country(
-      name: 'Indonesia',
-      flagEmoji: '🇮🇩',
-      capital: 'Jakarta',
-      population: 273523621,
-      area: 1904569,
-      languages: ['Indonesian'],
-      coatOfArmsUrl: 'https://flagcdn.com/w320/id.png',
-    );
-
-    const tCountryList = [tCountry];
-
     group('CountriesInitial', () {
       test('should create CountriesInitial state', () {
         // arrange & act
@@ -58,17 +46,25 @@ void main() {
       );
 
       test('should create CountriesLoading with provided countries list', () {
-        // arrange & act
-        const state = CountriesLoading(countries: tCountryList);
+        // arrange
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+
+        // act
+        const state = CountriesLoading(countries: countries);
 
         // assert
-        expect(state.countries, tCountryList);
+        expect(state.countries, countries);
       });
 
       test('should be equal when countries lists are same', () {
         // arrange
-        const state1 = CountriesLoading(countries: tCountryList);
-        const state2 = CountriesLoading(countries: tCountryList);
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const state1 = CountriesLoading(countries: countries);
+        const state2 = CountriesLoading(countries: countries);
 
         // act & assert
         expect(state1, equals(state2));
@@ -77,45 +73,68 @@ void main() {
 
       test('should not be equal when countries lists are different', () {
         // arrange
-        const state1 = CountriesLoading(countries: tCountryList);
-        const state2 = CountriesLoading();
+        const countries1 = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const countries2 = [
+          Country(name: 'Malaysia', flagEmoji: '🇲🇾', capital: 'Kuala Lumpur'),
+        ];
+        const state1 = CountriesLoading(countries: countries1);
+        const state2 = CountriesLoading(countries: countries2);
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
         // arrange
-        const state = CountriesLoading(countries: tCountryList);
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const state = CountriesLoading(countries: countries);
 
         // act & assert
-        expect(state.props, [tCountryList]);
+        expect(state.props, [countries]);
       });
     });
 
     group('CountriesLoaded', () {
       test('should create CountriesLoaded with default isFromCache false', () {
-        // arrange & act
-        const state = CountriesLoaded(tCountryList);
+        // arrange
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+
+        // act
+        const state = CountriesLoaded(countries);
 
         // assert
-        expect(state.countries, tCountryList);
+        expect(state.countries, countries);
         expect(state.isFromCache, false);
       });
 
       test('should create CountriesLoaded with isFromCache true', () {
-        // arrange & act
-        const state = CountriesLoaded(tCountryList, isFromCache: true);
+        // arrange
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+
+        // act
+        const state = CountriesLoaded(countries, isFromCache: true);
 
         // assert
-        expect(state.countries, tCountryList);
+        expect(state.countries, countries);
         expect(state.isFromCache, true);
       });
 
       test('should be equal when countries and isFromCache are same', () {
         // arrange
-        const state1 = CountriesLoaded(tCountryList, isFromCache: true);
-        const state2 = CountriesLoaded(tCountryList, isFromCache: true);
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const state1 = CountriesLoaded(countries, isFromCache: true);
+        const state2 = CountriesLoaded(countries, isFromCache: true);
 
         // act & assert
         expect(state1, equals(state2));
@@ -124,28 +143,42 @@ void main() {
 
       test('should not be equal when isFromCache is different', () {
         // arrange
-        const state1 = CountriesLoaded(tCountryList, isFromCache: false);
-        const state2 = CountriesLoaded(tCountryList, isFromCache: true);
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const state1 = CountriesLoaded(countries, isFromCache: true);
+        const state2 = CountriesLoaded(countries, isFromCache: false);
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should not be equal when countries are different', () {
         // arrange
-        const state1 = CountriesLoaded(tCountryList);
-        const state2 = CountriesLoaded([]);
+        const countries1 = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const countries2 = [
+          Country(name: 'Malaysia', flagEmoji: '🇲🇾', capital: 'Kuala Lumpur'),
+        ];
+        const state1 = CountriesLoaded(countries1);
+        const state2 = CountriesLoaded(countries2);
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
         // arrange
-        const state = CountriesLoaded(tCountryList, isFromCache: true);
+        const countries = [
+          Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        ];
+        const state = CountriesLoaded(countries, isFromCache: true);
 
         // act & assert
-        expect(state.props, [tCountryList, true]);
+        expect(state.props, [countries, true]);
       });
     });
 
@@ -153,11 +186,18 @@ void main() {
       test(
         'should create CountryDetailLoaded with default empty countries list',
         () {
-          // arrange & act
-          const state = CountryDetailLoaded(tCountry);
+          // arrange
+          const country = Country(
+            name: 'Indonesia',
+            flagEmoji: '🇮🇩',
+            capital: 'Jakarta',
+          );
+
+          // act
+          const state = CountryDetailLoaded(country);
 
           // assert
-          expect(state.country, tCountry);
+          expect(state.country, country);
           expect(state.countries, isEmpty);
         },
       );
@@ -165,19 +205,33 @@ void main() {
       test(
         'should create CountryDetailLoaded with provided countries list',
         () {
-          // arrange & act
-          const state = CountryDetailLoaded(tCountry, countries: tCountryList);
+          // arrange
+          const country = Country(
+            name: 'Indonesia',
+            flagEmoji: '🇮🇩',
+            capital: 'Jakarta',
+          );
+          const countries = [country];
+
+          // act
+          const state = CountryDetailLoaded(country, countries: countries);
 
           // assert
-          expect(state.country, tCountry);
-          expect(state.countries, tCountryList);
+          expect(state.country, country);
+          expect(state.countries, countries);
         },
       );
 
       test('should be equal when country and countries are same', () {
         // arrange
-        const state1 = CountryDetailLoaded(tCountry, countries: tCountryList);
-        const state2 = CountryDetailLoaded(tCountry, countries: tCountryList);
+        const country = Country(
+          name: 'Indonesia',
+          flagEmoji: '🇮🇩',
+          capital: 'Jakarta',
+        );
+        const countries = [country];
+        const state1 = CountryDetailLoaded(country, countries: countries);
+        const state2 = CountryDetailLoaded(country, countries: countries);
 
         // act & assert
         expect(state1, equals(state2));
@@ -186,47 +240,71 @@ void main() {
 
       test('should not be equal when country is different', () {
         // arrange
-        const state1 = CountryDetailLoaded(tCountry, countries: tCountryList);
-        const state2 = CountryDetailLoaded(
-          Country(name: 'Malaysia', flagEmoji: '🇲🇾', capital: 'Kuala Lumpur'),
-          countries: tCountryList,
+        const country1 = Country(
+          name: 'Indonesia',
+          flagEmoji: '🇮🇩',
+          capital: 'Jakarta',
         );
+        const country2 = Country(
+          name: 'Malaysia',
+          flagEmoji: '🇲🇾',
+          capital: 'Kuala Lumpur',
+        );
+        const state1 = CountryDetailLoaded(country1);
+        const state2 = CountryDetailLoaded(country2);
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should not be equal when countries are different', () {
         // arrange
-        const state1 = CountryDetailLoaded(tCountry, countries: tCountryList);
-        const state2 = CountryDetailLoaded(tCountry);
+        const country = Country(
+          name: 'Indonesia',
+          flagEmoji: '🇮🇩',
+          capital: 'Jakarta',
+        );
+        const countries1 = [country];
+        const countries2 = [
+          Country(name: 'Malaysia', flagEmoji: '🇲🇾', capital: 'Kuala Lumpur'),
+        ];
+        const state1 = CountryDetailLoaded(country, countries: countries1);
+        const state2 = CountryDetailLoaded(country, countries: countries2);
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
         // arrange
-        const state = CountryDetailLoaded(tCountry, countries: tCountryList);
+        const country = Country(
+          name: 'Indonesia',
+          flagEmoji: '🇮🇩',
+          capital: 'Jakarta',
+        );
+        const countries = [country];
+        const state = CountryDetailLoaded(country, countries: countries);
 
         // act & assert
-        expect(state.props, [tCountry, tCountryList]);
+        expect(state.props, [country, countries]);
       });
     });
 
     group('CountriesError', () {
       test('should create CountriesError with message', () {
         // arrange & act
-        const state = CountriesError('Error message');
+        const state = CountriesError('Test error message');
 
         // assert
-        expect(state.message, 'Error message');
+        expect(state.message, 'Test error message');
       });
 
       test('should be equal when messages are same', () {
         // arrange
-        const state1 = CountriesError('Error message');
-        const state2 = CountriesError('Error message');
+        const state1 = CountriesError('Test error message');
+        const state2 = CountriesError('Test error message');
 
         // act & assert
         expect(state1, equals(state2));
@@ -235,19 +313,20 @@ void main() {
 
       test('should not be equal when messages are different', () {
         // arrange
-        const state1 = CountriesError('Error message 1');
-        const state2 = CountriesError('Error message 2');
+        const state1 = CountriesError('Test error message 1');
+        const state2 = CountriesError('Test error message 2');
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
         // arrange
-        const state = CountriesError('Error message');
+        const state = CountriesError('Test error message');
 
         // act & assert
-        expect(state.props, ['Error message']);
+        expect(state.props, ['Test error message']);
       });
     });
   });

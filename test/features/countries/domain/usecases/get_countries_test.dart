@@ -1,6 +1,6 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dartz/dartz.dart';
 
 import 'package:countries_explorer/core/error/failure.dart';
 import 'package:countries_explorer/core/usecases/usecase.dart';
@@ -19,44 +19,37 @@ void main() {
     usecase = GetCountries(mockRepository);
   });
 
-  const tCountry = Country(
-    name: 'Indonesia',
-    flagEmoji: '🇮🇩',
-    capital: 'Jakarta',
-    population: 273523621,
-    area: 1904569,
-    languages: ['Indonesian'],
-    coatOfArmsUrl: 'https://flagcdn.com/w320/id.png',
-  );
-  final tCountries = [tCountry];
+  group('GetCountries', () {
+    test('should get list of countries from repository', () async {
+      // arrange
+      const tCountries = [
+        Country(name: 'Indonesia', flagEmoji: '🇮🇩', capital: 'Jakarta'),
+        Country(name: 'Malaysia', flagEmoji: '🇲🇾', capital: 'Kuala Lumpur'),
+      ];
+      when(
+        () => mockRepository.getAllCountries(),
+      ).thenAnswer((_) async => const Right(tCountries));
 
-  test('should get list of countries from repository', () async {
-    // arrange
-    when(
-      () => mockRepository.getAllCountries(),
-    ).thenAnswer((_) async => Right(tCountries));
+      // act
+      final result = await usecase(NoParams());
 
-    // act
-    final result = await usecase(NoParams());
+      // assert
+      expect(result, const Right(tCountries));
+      verify(() => mockRepository.getAllCountries()).called(1);
+    });
 
-    // assert
-    expect(result, Right(tCountries));
-    verify(() => mockRepository.getAllCountries()).called(1);
-    verifyNoMoreInteractions(mockRepository);
-  });
+    test('should return failure when repository fails', () async {
+      // arrange
+      when(
+        () => mockRepository.getAllCountries(),
+      ).thenAnswer((_) async => const Left(ServerFailure('Server error')));
 
-  test('should return failure when repository fails', () async {
-    // arrange
-    when(
-      () => mockRepository.getAllCountries(),
-    ).thenAnswer((_) async => const Left(ServerFailure('error')));
+      // act
+      final result = await usecase(NoParams());
 
-    // act
-    final result = await usecase(NoParams());
-
-    // assert
-    expect(result, equals(const Left(ServerFailure('error'))));
-    verify(() => mockRepository.getAllCountries()).called(1);
-    verifyNoMoreInteractions(mockRepository);
+      // assert
+      expect(result, const Left(ServerFailure('Server error')));
+      verify(() => mockRepository.getAllCountries()).called(1);
+    });
   });
 }

@@ -58,6 +58,7 @@ void main() {
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
@@ -119,10 +120,11 @@ void main() {
       test('should not be equal when flag emojis are different', () {
         // arrange
         const state1 = FlagEmojiProvided('🇮🇩');
-        const state2 = FlagEmojiProvided('🇲🇾');
+        const state2 = FlagEmojiProvided('🇺🇸');
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {
@@ -160,6 +162,7 @@ void main() {
 
         // act & assert
         expect(state1, isNot(equals(state2)));
+        expect(state1.hashCode, isNot(equals(state2.hashCode)));
       });
 
       test('should have correct props', () {

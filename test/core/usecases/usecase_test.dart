@@ -4,22 +4,26 @@ import 'package:countries_explorer/core/usecases/usecase.dart';
 
 void main() {
   group('UseCase', () {
-    test('NoParams should be equal to other NoParams instances', () {
-      // arrange
-      final noParams1 = NoParams();
-      final noParams2 = NoParams();
+    group('NoParams', () {
+      test('should be equal to other NoParams instances', () {
+        // arrange
+        final params1 = NoParams();
+        final params2 = NoParams();
 
-      // act & assert
-      expect(noParams1, isA<NoParams>());
-      expect(noParams2, isA<NoParams>());
-    });
+        // act & assert
+        expect(params1, isA<NoParams>());
+        expect(params2, isA<NoParams>());
+      });
 
-    test('NoParams should be constant', () {
-      // arrange & act
-      final noParams = NoParams();
+      test('should create instances successfully', () {
+        // arrange & act
+        final params1 = NoParams();
+        final params2 = NoParams();
 
-      // assert
-      expect(noParams, isA<NoParams>());
+        // assert
+        expect(params1, isNotNull);
+        expect(params2, isNotNull);
+      });
     });
   });
 }

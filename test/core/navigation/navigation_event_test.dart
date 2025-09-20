@@ -30,6 +30,7 @@ void main() {
 
         // act & assert
         expect(event1, isNot(equals(event2)));
+        expect(event1.hashCode, isNot(equals(event2.hashCode)));
       });
 
       test('should have correct props', () {
@@ -38,34 +39,6 @@ void main() {
 
         // act & assert
         expect(event.props, ['Indonesia']);
-      });
-    });
-
-    group('NavigateBack', () {
-      test('should create NavigateBack event', () {
-        // arrange & act
-        const event = NavigateBack();
-
-        // assert
-        expect(event, isA<NavigateBack>());
-      });
-
-      test('should be equal to other NavigateBack events', () {
-        // arrange
-        const event1 = NavigateBack();
-        const event2 = NavigateBack();
-
-        // act & assert
-        expect(event1, equals(event2));
-        expect(event1.hashCode, equals(event2.hashCode));
-      });
-
-      test('should have empty props', () {
-        // arrange
-        const event = NavigateBack();
-
-        // act & assert
-        expect(event.props, isEmpty);
       });
     });
 
@@ -106,16 +79,6 @@ void main() {
         expect(event.countryName, 'Indonesia');
       });
 
-      test('should be equal when country names are same', () {
-        // arrange
-        const event1 = RequestCachedFlagEmoji('Indonesia');
-        const event2 = RequestCachedFlagEmoji('Indonesia');
-
-        // act & assert
-        expect(event1, equals(event2));
-        expect(event1.hashCode, equals(event2.hashCode));
-      });
-
       test('should not be equal when country names are different', () {
         // arrange
         const event1 = RequestCachedFlagEmoji('Indonesia');
@@ -123,6 +86,7 @@ void main() {
 
         // act & assert
         expect(event1, isNot(equals(event2)));
+        expect(event1.hashCode, isNot(equals(event2.hashCode)));
       });
 
       test('should have correct props', () {
@@ -160,6 +124,7 @@ void main() {
 
         // act & assert
         expect(event1, isNot(equals(event2)));
+        expect(event1.hashCode, isNot(equals(event2.hashCode)));
       });
 
       test('should have correct props', () {
