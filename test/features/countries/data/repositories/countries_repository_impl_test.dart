@@ -86,6 +86,25 @@ void main() {
       verify(() => mockRemote.getAllCountries()).called(1);
       verify(() => mockLocal.getLastCountries()).called(1);
     });
+
+    test('returns ParseFailure when FormatException occurs', () async {
+      when(() => mockRemote.getAllCountries()).thenThrow(
+        const FormatException('Invalid JSON format', 'malformed data'),
+      );
+
+      final result = await repository.getAllCountries();
+
+      expect(
+        result,
+        equals(
+          const Left(
+            ParseFailure('Failed to parse countries data: Invalid JSON format'),
+          ),
+        ),
+      );
+      verify(() => mockRemote.getAllCountries()).called(1);
+      verifyNever(() => mockLocal.getLastCountries());
+    });
   });
 
   group('getCountryDetail', () {
@@ -118,6 +137,40 @@ void main() {
         ),
       );
       verify(() => mockRemote.getCountryByName('Indonesia')).called(1);
+    });
+
+    test('returns ParseFailure when FormatException occurs', () async {
+      when(() => mockRemote.getCountryByName('Indonesia')).thenThrow(
+        const FormatException('Invalid JSON format', 'malformed data'),
+      );
+
+      final result = await repository.getCountryByName('Indonesia');
+
+      expect(
+        result,
+        equals(
+          const Left(
+            ParseFailure('Failed to parse country data: Invalid JSON format'),
+          ),
+        ),
+      );
+      verify(() => mockRemote.getCountryByName('Indonesia')).called(1);
+    });
+
+    test('returns NotFoundFailure when 404 exception occurs', () async {
+      when(
+        () => mockRemote.getCountryByName('NonExistentCountry'),
+      ).thenThrow(Exception('404: Not Found'));
+
+      final result = await repository.getCountryByName('NonExistentCountry');
+
+      expect(
+        result,
+        equals(
+          const Left(NotFoundFailure('Country "NonExistentCountry" not found')),
+        ),
+      );
+      verify(() => mockRemote.getCountryByName('NonExistentCountry')).called(1);
     });
   });
 }
