@@ -23,15 +23,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(NoParams());
-    registerFallbackValue('');
   });
-
-  const tCountry = Country(
-    name: 'Indonesia',
-    flagEmoji: '🇮🇩',
-    capital: 'Jakarta',
-  );
-  final tCountries = [tCountry];
 
   setUp(() {
     mockGetCountries = MockGetCountries();
@@ -42,75 +34,98 @@ void main() {
     );
   });
 
-  group('LoadCountries', () {
-    blocTest<CountriesBloc, CountriesState>(
-      'emits [Loading, Loaded] when getCountries succeeds',
-      build: () {
-        when(
-          () => mockGetCountries.call(any()),
-        ).thenAnswer((_) async => Right(tCountries));
-        return bloc;
-      },
-      act: (bloc) => bloc.add(LoadCountries()),
-      expect: () => [
-        isA<CountriesLoading>(),
-        isA<CountriesLoaded>().having(
-          (s) => s.countries,
-          'countries',
-          tCountries,
-        ),
-      ],
-    );
-
-    blocTest<CountriesBloc, CountriesState>(
-      'emits [Loading, Error] when getCountries fails',
-      build: () {
-        when(
-          () => mockGetCountries.call(any()),
-        ).thenAnswer((_) async => const Left(ServerFailure('error')));
-        return bloc;
-      },
-      act: (bloc) => bloc.add(LoadCountries()),
-      expect: () => [
-        isA<CountriesLoading>(),
-        isA<CountriesError>().having((s) => s.message, 'message', 'error'),
-      ],
-    );
+  tearDown(() {
+    bloc.close();
   });
 
-  group('LoadCountryDetail', () {
-    blocTest<CountriesBloc, CountriesState>(
-      'emits [Loading, CountryDetailLoaded] when getCountryDetail succeeds',
-      build: () {
-        when(
-          () => mockGetCountryDetail.call(any()),
-        ).thenAnswer((_) async => const Right(tCountry));
-        return bloc;
-      },
-      act: (bloc) => bloc.add(const LoadCountryDetail('Indonesia')),
-      expect: () => [
-        isA<CountriesLoading>(),
-        isA<CountryDetailLoaded>().having(
-          (s) => s.country,
-          'country',
-          tCountry,
-        ),
-      ],
-    );
+  const tCountry = Country(
+    name: 'Indonesia',
+    flagEmoji: '🇮🇩',
+    capital: 'Jakarta',
+    population: 273523621,
+    area: 1904569,
+    languages: ['Indonesian'],
+    coatOfArmsUrl: 'https://flagcdn.com/w320/id.png',
+  );
 
-    blocTest<CountriesBloc, CountriesState>(
-      'emits [Loading, Error] when getCountryDetail fails',
-      build: () {
-        when(
-          () => mockGetCountryDetail.call(any()),
-        ).thenAnswer((_) async => const Left(ServerFailure('fail')));
-        return bloc;
-      },
-      act: (bloc) => bloc.add(const LoadCountryDetail('Indonesia')),
-      expect: () => [
-        isA<CountriesLoading>(),
-        isA<CountriesError>().having((s) => s.message, 'message', 'fail'),
-      ],
-    );
+  final tCountryList = [tCountry];
+
+  group('CountriesBloc', () {
+    test('initial state should be CountriesInitial', () {
+      expect(bloc.state, equals(CountriesInitial()));
+    });
+
+    group('LoadCountries', () {
+      blocTest<CountriesBloc, CountriesState>(
+        'emits [Loading, Loaded] when getCountries succeeds',
+        build: () {
+          when(
+            () => mockGetCountries(any()),
+          ).thenAnswer((_) async => Right(tCountryList));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(LoadCountries()),
+        expect: () => [
+          isA<CountriesLoading>(),
+          isA<CountriesLoaded>().having(
+            (s) => s.countries,
+            'countries',
+            tCountryList,
+          ),
+        ],
+      );
+
+      blocTest<CountriesBloc, CountriesState>(
+        'emits [Loading, Error] when getCountries fails',
+        build: () {
+          when(
+            () => mockGetCountries(any()),
+          ).thenAnswer((_) async => Left(ServerFailure('error')));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(LoadCountries()),
+        expect: () => [
+          isA<CountriesLoading>(),
+          isA<CountriesError>().having((s) => s.message, 'message', 'error'),
+        ],
+      );
+    });
+
+    group('LoadCountryDetail', () {
+      blocTest<CountriesBloc, CountriesState>(
+        'emits [Loading, CountryDetailLoaded] when getCountryDetail succeeds',
+        build: () {
+          when(
+            () => mockGetCountryDetail(any()),
+          ).thenAnswer((_) async => Right(tCountry));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const LoadCountryDetail('Indonesia')),
+        expect: () => [
+          isA<CountriesLoading>(),
+          isA<CountryDetailLoaded>().having(
+            (s) => s.country,
+            'country',
+            tCountry,
+          ),
+        ],
+      );
+
+      blocTest<CountriesBloc, CountriesState>(
+        'emits [Loading, Error] when getCountryDetail fails',
+        build: () {
+          when(
+            () => mockGetCountryDetail(any()),
+          ).thenAnswer((_) async => Left(ServerFailure('fail')));
+          return bloc;
+        },
+        act: (bloc) => bloc.add(const LoadCountryDetail('Indonesia')),
+        expect: () => [
+          isA<CountriesLoading>(),
+          isA<CountriesError>().having((s) => s.message, 'message', 'fail'),
+        ],
+      );
+    });
   });
 }
+

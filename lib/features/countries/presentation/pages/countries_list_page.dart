@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/countries_bloc.dart';
 import '../bloc/countries_event.dart';
 import '../bloc/countries_state.dart';
-import '../bloc/navigation_bloc.dart';
+import '../../../../core/navigation/navigation_bloc.dart';
+import '../../../../core/navigation/navigation_event.dart';
+import '../../../../core/navigation/navigation_state.dart';
 import '../widgets/offline_indicator.dart';
 import 'country_detail_page.dart';
 

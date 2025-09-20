@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/countries/presentation/bloc/countries_event.dart';
 import 'features/countries/presentation/pages/countries_list_page.dart';
 import 'features/countries/presentation/bloc/countries_bloc.dart';
-import 'features/countries/presentation/bloc/navigation_bloc.dart';
+import 'core/navigation/navigation_bloc.dart';
 import 'features/countries/domain/usecases/get_countries.dart';
 import 'features/countries/domain/usecases/get_country_detail.dart';
 import 'injection_container.dart';

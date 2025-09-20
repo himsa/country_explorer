@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'countries_event.dart';
 import 'countries_state.dart';
-import 'navigation_bloc.dart';
+import '../../../../core/navigation/navigation_bloc.dart';
 import '../../domain/usecases/get_countries.dart';
 import '../../domain/usecases/get_country_detail.dart';
 import '../../domain/entities/country.dart';
