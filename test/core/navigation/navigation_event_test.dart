@@ -2,6 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/core/navigation/navigation_event.dart';
 
+/// Test suite for NavigationEvent classes
+/// Tests the navigation event system for app navigation flow
+/// Covers all navigation events: navigation requests, scheduling, and data loading
+/// Ensures proper equality, props, and event handling
 void main() {
   group('NavigationEvent', () {
     group('NavigateToCountryDetail', () {

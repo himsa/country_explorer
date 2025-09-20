@@ -2,6 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/core/usecases/usecase.dart';
 
+/// Test suite for UseCase base classes
+/// Tests the NoParams class used by use cases that don't require parameters
+/// Ensures proper instantiation and equality behavior
 void main() {
   group('UseCase', () {
     group('NoParams', () {

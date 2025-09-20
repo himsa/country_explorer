@@ -4,8 +4,13 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:countries_explorer/features/countries/data/datasources/countries_remote_data_source.dart';
 
+/// Mock HTTP client for testing remote data source
 class MockHttpClient extends Mock implements http.Client {}
 
+/// Test suite for CountriesRemoteDataSource
+/// Tests the API integration layer for fetching countries data
+/// Covers successful API calls, error handling, and JSON parsing
+/// Simulates network failures and invalid responses
 void main() {
   late CountriesRemoteDataSourceImpl dataSource;
   late MockHttpClient mockHttpClient;

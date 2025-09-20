@@ -2,6 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/core/navigation/navigation_state.dart';
 
+/// Test suite for NavigationState classes
+/// Tests the navigation state management for app navigation flow
+/// Covers all navigation states: initial, navigation events, and scheduled actions
+/// Ensures proper equality, props, and state transitions
 void main() {
   group('NavigationState', () {
     group('NavigationInitial', () {

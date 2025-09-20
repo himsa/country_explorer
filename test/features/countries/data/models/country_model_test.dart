@@ -2,6 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/features/countries/data/models/country_model.dart';
 
+/// Test suite for CountryModel
+/// Tests the data model layer for country data serialization/deserialization
+/// Covers JSON parsing, flag emoji conversion, and edge case handling
+/// Ensures proper handling of missing fields and invalid data
 void main() {
   group('CountryModel', () {
     test('should create a CountryModel instance with all properties', () {

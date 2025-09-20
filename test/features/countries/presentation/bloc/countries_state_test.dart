@@ -3,6 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:countries_explorer/features/countries/domain/entities/country.dart';
 import 'package:countries_explorer/features/countries/presentation/bloc/countries_state.dart';
 
+/// Test suite for CountriesState classes
+/// Tests the state management for countries list and detail views
+/// Covers all state types: initial, loading, loaded, error, and detail states
+/// Ensures proper equality, props, and state transitions
 void main() {
   group('CountriesState', () {
     group('CountriesInitial', () {

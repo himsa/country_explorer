@@ -2,6 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/features/countries/presentation/bloc/countries_event.dart';
 
+/// Test suite for CountriesEvent classes
+/// Tests the event system for countries list and detail interactions
+/// Covers all event types: loading, refreshing, navigation, and detail requests
+/// Ensures proper equality, props, and event handling
 void main() {
   group('CountriesEvent', () {
     group('LoadCountries', () {

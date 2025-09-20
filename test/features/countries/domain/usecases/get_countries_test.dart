@@ -8,8 +8,12 @@ import 'package:countries_explorer/features/countries/domain/entities/country.da
 import 'package:countries_explorer/features/countries/domain/repositories/countries_repository.dart';
 import 'package:countries_explorer/features/countries/domain/usecases/get_countries.dart';
 
+/// Mock repository for testing GetCountries use case
 class MockCountriesRepository extends Mock implements CountriesRepository {}
 
+/// Test suite for GetCountries use case
+/// Tests the core business logic for fetching all countries
+/// Covers both success and failure scenarios with proper mocking
 void main() {
   late GetCountries usecase;
   late MockCountriesRepository mockRepository;

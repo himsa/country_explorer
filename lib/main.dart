@@ -8,12 +8,26 @@ import 'features/countries/domain/usecases/get_countries.dart';
 import 'features/countries/domain/usecases/get_country_detail.dart';
 import 'injection_container.dart';
 
+/// Application entry point
+///
+/// Initializes the Flutter app with dependency injection and
+/// sets up the BLoC providers for state management.
+///
+/// The app follows Clean Architecture with:
+/// - Dependency injection using get_it
+/// - BLoC pattern for state management
+/// - MultiBlocProvider for coordinating multiple BLoCs
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   runApp(const MyApp());
 }
 
+/// Root application widget
+///
+/// Configures the MaterialApp with theme settings and BLoC providers.
+/// Sets up the dependency injection and coordinates between CountriesBloc
+/// and NavigationBloc for proper state management.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

@@ -12,10 +12,15 @@ import 'package:countries_explorer/features/countries/presentation/bloc/countrie
 import 'package:countries_explorer/features/countries/presentation/bloc/countries_event.dart';
 import 'package:countries_explorer/features/countries/presentation/bloc/countries_state.dart';
 
+/// Mock use cases for testing CountriesBloc
 class MockGetCountries extends Mock implements GetCountries {}
 
 class MockGetCountryDetail extends Mock implements GetCountryDetail {}
 
+/// Test suite for CountriesBloc
+/// Tests the state management logic for countries list and detail views
+/// Uses blocTest for proper stream testing of BLoC state transitions
+/// Covers both success and failure scenarios for all events
 void main() {
   late CountriesBloc countriesBloc;
   late MockGetCountries mockGetCountries;

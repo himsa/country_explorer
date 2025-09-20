@@ -2,6 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:countries_explorer/core/error/failure.dart';
 
+/// Test suite for Failure classes
+/// Tests the core error handling mechanism used throughout the app
+/// Ensures proper equality, message handling, and type safety
 void main() {
   group('Failure', () {
     group('ServerFailure', () {
@@ -75,4 +78,3 @@ void main() {
     });
   });
 }
-

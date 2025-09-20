@@ -37,15 +37,6 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share_rounded),
-            tooltip: 'Share',
-            onPressed: () {
-              // TODO: Implement share functionality
-            },
-          ),
-        ],
       ),
       body: BlocListener<NavigationBloc, NavigationState>(
         listener: (context, state) {

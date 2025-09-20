@@ -4,6 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:countries_explorer/features/countries/data/datasources/countries_local_data_source.dart';
 import 'package:countries_explorer/features/countries/data/models/country_model.dart';
 
+/// Test suite for CountriesLocalDataSource
+/// Tests the local caching mechanism using SharedPreferences
+/// Covers caching countries data and retrieving cached data
+/// Tests error handling when no cached data is available
 void main() {
   late CountriesLocalDataSourceImpl dataSource;
 
