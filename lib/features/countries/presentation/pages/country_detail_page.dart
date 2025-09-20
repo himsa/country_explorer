@@ -4,9 +4,16 @@ import '../bloc/countries_bloc.dart';
 import '../bloc/countries_event.dart';
 import '../bloc/countries_state.dart';
 
-class CountryDetailPage extends StatelessWidget {
+class CountryDetailPage extends StatefulWidget {
   final String name;
   const CountryDetailPage({super.key, required this.name});
+
+  @override
+  State<CountryDetailPage> createState() => _CountryDetailPageState();
+}
+
+class _CountryDetailPageState extends State<CountryDetailPage> {
+  String? _cachedFlagEmoji;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +21,10 @@ class CountryDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          widget.name,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -29,191 +39,242 @@ class CountryDetailPage extends StatelessWidget {
       ),
       body: BlocBuilder<CountriesBloc, CountriesState>(
         builder: (context, state) {
-          if (state is CountriesLoading) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withValues(
-                        alpha: 0.1,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Loading country details...',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is CountryDetailLoaded) {
-            final country = state.country;
-            return CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 200,
-                  pinned: true,
-                  automaticallyImplyLeading: false,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            theme.primaryColor.withValues(alpha: 0.1),
-                            theme.primaryColor.withValues(alpha: 0.05),
-                          ],
-                        ),
-                      ),
-                      child: Center(
-                        child: Hero(
-                          tag: 'flag-$name',
-                          child: Container(
-                            width: 120,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: theme.dividerColor,
-                                width: 1,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                country.flagEmoji,
-                                style: const TextStyle(fontSize: 48),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      _buildInfoCard(context, 'Basic Information', [
-                        _buildInfoRow(
-                          context,
-                          'Capital',
-                          country.capital,
-                          Icons.location_city_rounded,
-                        ),
-                        _buildInfoRow(
-                          context,
-                          'Population',
-                          country.population != null
-                              ? _formatNumber(country.population!)
-                              : 'N/A',
-                          Icons.people_rounded,
-                        ),
-                        _buildInfoRow(
-                          context,
-                          'Area',
-                          country.area != null
-                              ? '${_formatNumber(country.area!)} km²'
-                              : 'N/A',
-                          Icons.area_chart_rounded,
-                        ),
-                        if (country.languages?.isNotEmpty == true)
-                          _buildInfoRow(
-                            context,
-                            'Languages',
-                            country.languages!.join(', '),
-                            Icons.translate_rounded,
-                          ),
-                      ]),
-                      if (country.coatOfArmsUrl != null) ...[
-                        const SizedBox(height: 16),
-                        _buildCoatOfArmsCard(context, country.coatOfArmsUrl!),
-                      ],
-                    ]),
-                  ),
-                ),
-              ],
-            );
-          } else if (state is CountriesError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.errorContainer.withValues(
-                          alpha: 0.1,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.error_outline_rounded,
-                        size: 48,
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Failed to load country details',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      state.message,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-                    FilledButton.icon(
-                      onPressed: () {
-                        context.read<CountriesBloc>().add(
-                          LoadCountryDetail(name),
-                        );
-                      },
-                      icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('Try Again'),
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+          // Cache flag emoji from countries list on first load
+          if (_cachedFlagEmoji == null && state is CountriesLoaded) {
+            try {
+              final country = state.countries.firstWhere(
+                (c) => c.name == widget.name,
+              );
+              _cachedFlagEmoji = country.flagEmoji;
+            } catch (e) {
+              // If not found, try to get from any available country as fallback
+              if (state.countries.isNotEmpty) {
+                _cachedFlagEmoji = state.countries.first.flagEmoji;
+              }
+            }
           }
-          return const SizedBox.shrink();
+
+          // Use cached flag emoji or fallback to default
+          final flagEmoji = _cachedFlagEmoji ?? '🏳️';
+
+          return CustomScrollView(
+            slivers: [
+              // Always show hero widget immediately for animation
+              _buildSliverAppBar(context, theme, flagEmoji),
+              SliverFillRemaining(child: _buildContent(context, state, theme)),
+            ],
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    CountriesState state,
+    ThemeData theme,
+  ) {
+    if (state is CountriesLoading) {
+      return _buildLoadingContent(context, theme);
+    } else if (state is CountryDetailLoaded) {
+      return _buildLoadedContent(context, state, theme);
+    } else if (state is CountriesError) {
+      return _buildErrorContent(context, state, theme);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildLoadingContent(BuildContext context, ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Loading country details...',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadedContent(
+    BuildContext context,
+    CountryDetailLoaded state,
+    ThemeData theme,
+  ) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildInfoCard(context, 'Basic Information', [
+            _buildInfoRow(
+              context,
+              'Capital',
+              state.country.capital,
+              Icons.location_city_rounded,
+            ),
+            _buildInfoRow(
+              context,
+              'Population',
+              state.country.population != null
+                  ? _formatNumber(state.country.population!)
+                  : 'N/A',
+              Icons.people_rounded,
+            ),
+            _buildInfoRow(
+              context,
+              'Area',
+              state.country.area != null
+                  ? '${_formatNumber(state.country.area!)} km²'
+                  : 'N/A',
+              Icons.area_chart_rounded,
+            ),
+            if (state.country.languages?.isNotEmpty == true)
+              _buildInfoRow(
+                context,
+                'Languages',
+                state.country.languages!.join(', '),
+                Icons.translate_rounded,
+              ),
+          ]),
+          if (state.country.coatOfArmsUrl != null) ...[
+            const SizedBox(height: 16),
+            _buildCoatOfArmsCard(context, state.country.coatOfArmsUrl!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorContent(
+    BuildContext context,
+    CountriesError state,
+    ThemeData theme,
+  ) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Failed to load country details',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              state.message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () {
+                context.read<CountriesBloc>().add(
+                  LoadCountryDetail(widget.name),
+                );
+              },
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Try Again'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(
+    BuildContext context,
+    ThemeData theme,
+    String flagEmoji,
+  ) {
+    return SliverAppBar(
+      expandedHeight: 200,
+      pinned: true,
+      automaticallyImplyLeading: false,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                theme.primaryColor.withValues(alpha: 0.1),
+                theme.primaryColor.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+          child: Center(
+            child: Hero(
+              tag: 'flag-${widget.name}',
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: 120,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.dividerColor, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      flagEmoji,
+                      style: const TextStyle(fontSize: 48),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

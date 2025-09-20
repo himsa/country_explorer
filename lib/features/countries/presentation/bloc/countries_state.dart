@@ -29,10 +29,11 @@ class CountriesLoaded extends CountriesState {
 
 class CountryDetailLoaded extends CountriesState {
   final Country country;
-  const CountryDetailLoaded(this.country);
+  final List<Country> countries;
+  const CountryDetailLoaded(this.country, {this.countries = const []});
 
   @override
-  List<Object?> get props => [country];
+  List<Object?> get props => [country, countries];
 }
 
 class CountriesError extends CountriesState {

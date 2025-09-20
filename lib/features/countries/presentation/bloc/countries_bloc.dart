@@ -10,6 +10,9 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
   final GetCountries getCountries;
   final GetCountryDetail getCountryDetail;
 
+  // Preserve countries list when navigating to detail
+  List<Country> _preservedCountries = [];
+
   CountriesBloc({required this.getCountries, required this.getCountryDetail})
     : super(CountriesInitial()) {
     on<LoadCountries>(_onLoadCountries);
@@ -24,10 +27,12 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
   ) async {
     emit(const CountriesLoading());
     final result = await getCountries(NoParams());
-    result.fold(
-      (failure) => emit(CountriesError(failure.message)),
-      (countries) => emit(CountriesLoaded(countries)),
-    );
+    result.fold((failure) => emit(CountriesError(failure.message)), (
+      countries,
+    ) {
+      _preservedCountries = countries;
+      emit(CountriesLoaded(countries));
+    });
   }
 
   Future<void> _onRefreshCountries(
@@ -42,10 +47,12 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     }
 
     final result = await getCountries(NoParams());
-    result.fold(
-      (failure) => emit(CountriesError(failure.message)),
-      (countries) => emit(CountriesLoaded(countries)),
-    );
+    result.fold((failure) => emit(CountriesError(failure.message)), (
+      countries,
+    ) {
+      _preservedCountries = countries;
+      emit(CountriesLoaded(countries));
+    });
   }
 
   Future<void> _onLoadCountryDetail(
@@ -55,11 +62,15 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     // Preserve current countries list when loading detail
     final currentState = state;
     List<Country> currentCountries = [];
+
     if (currentState is CountriesLoaded) {
       currentCountries = currentState.countries;
+      // Keep the countries list in memory for when we return
+      _preservedCountries = currentCountries;
       emit(CountriesLoading(countries: currentCountries));
     } else if (currentState is CountriesLoading) {
       currentCountries = currentState.countries;
+      _preservedCountries = currentCountries;
       emit(CountriesLoading(countries: currentCountries));
     } else {
       emit(const CountriesLoading());
@@ -68,7 +79,8 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     final result = await getCountryDetail(event.name);
     result.fold(
       (failure) => emit(CountriesError(failure.message)),
-      (country) => emit(CountryDetailLoaded(country)),
+      (country) =>
+          emit(CountryDetailLoaded(country, countries: currentCountries)),
     );
   }
 
@@ -76,11 +88,16 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     ReturnToCountriesList event,
     Emitter<CountriesState> emit,
   ) async {
-    // Try to get cached countries first, then load fresh if needed
-    final result = await getCountries(NoParams());
-    result.fold(
-      (failure) => emit(CountriesError(failure.message)),
-      (countries) => emit(CountriesLoaded(countries, isFromCache: true)),
-    );
+    // Restore the preserved countries list
+    if (_preservedCountries.isNotEmpty) {
+      emit(CountriesLoaded(_preservedCountries, isFromCache: true));
+    } else {
+      // If no preserved countries, try to load from cache
+      final result = await getCountries(NoParams());
+      result.fold(
+        (failure) => emit(CountriesError(failure.message)),
+        (countries) => emit(CountriesLoaded(countries, isFromCache: true)),
+      );
+    }
   }
 }

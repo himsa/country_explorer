@@ -35,7 +35,9 @@ class CountriesListPage extends StatelessWidget {
         children: [
           BlocBuilder<CountriesBloc, CountriesState>(
             builder: (context, state) {
-              if (state is CountriesLoaded && state.isFromCache) {
+              if ((state is CountriesLoaded && state.isFromCache) ||
+                  (state is CountryDetailLoaded &&
+                      state.countries.isNotEmpty)) {
                 return const OfflineIndicator(
                   isOffline: true,
                   message: 'Showing cached data',
@@ -102,7 +104,12 @@ class CountriesListPage extends StatelessWidget {
                         ],
                       ),
                     );
-                  } else if (state is CountriesLoaded) {
+                  } else if (state is CountriesLoaded ||
+                      state is CountryDetailLoaded) {
+                    // Handle both CountriesLoaded and CountryDetailLoaded states
+                    final countries = state is CountriesLoaded
+                        ? state.countries
+                        : (state as CountryDetailLoaded).countries;
                     return RefreshIndicator(
                       color: theme.colorScheme.primary,
                       backgroundColor: theme.colorScheme.surface,
@@ -124,7 +131,7 @@ class CountriesListPage extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '${state.countries.length} countries',
+                                    '${countries.length} countries',
                                     style: theme.textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: theme.colorScheme.onSurfaceVariant,
@@ -137,11 +144,11 @@ class CountriesListPage extends StatelessWidget {
                           SliverPadding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             sliver: SliverList.separated(
-                              itemCount: state.countries.length,
+                              itemCount: countries.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 8),
                               itemBuilder: (context, index) {
-                                final country = state.countries[index];
+                                final country = countries[index];
                                 return Card(
                                   elevation: 0,
                                   color: theme
@@ -155,32 +162,72 @@ class CountriesListPage extends StatelessWidget {
                                     ),
                                     leading: Hero(
                                       tag: 'flag-${country.name}',
-                                      child: Container(
-                                        width: 56,
-                                        height: 42,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          border: Border.all(
-                                            color: theme.dividerColor,
-                                            width: 0.5,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.05,
+                                      flightShuttleBuilder:
+                                          (
+                                            flightContext,
+                                            animation,
+                                            flightDirection,
+                                            fromHeroContext,
+                                            toHeroContext,
+                                          ) {
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ScaleTransition(
+                                                scale: animation,
+                                                child: Container(
+                                                  width: 120,
+                                                  height: 80,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: Colors.grey,
+                                                      width: 1,
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      country.flagEmoji,
+                                                      style: const TextStyle(
+                                                        fontSize: 48,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                              blurRadius: 4,
-                                              offset: const Offset(0, 1),
+                                            );
+                                          },
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Container(
+                                          width: 56,
+                                          height: 42,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
-                                          ],
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            country.flagEmoji,
-                                            style: const TextStyle(
-                                              fontSize: 24,
+                                            border: Border.all(
+                                              color: theme.dividerColor,
+                                              width: 0.5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.05,
+                                                ),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 1),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              country.flagEmoji,
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -226,6 +273,7 @@ class CountriesListPage extends StatelessWidget {
                                     onTap: () {
                                       final bloc = context
                                           .read<CountriesBloc>();
+
                                       Navigator.of(context)
                                           .push(
                                             MaterialPageRoute(
@@ -239,10 +287,26 @@ class CountriesListPage extends StatelessWidget {
                                             ),
                                           )
                                           .then((_) {
-                                            // When returning from detail page, ensure countries list is restored
-                                            bloc.add(ReturnToCountriesList());
+                                            // When returning from detail page, delay restore to allow reverse hero animation
+                                            Future.delayed(
+                                              const Duration(milliseconds: 400),
+                                              () {
+                                                bloc.add(
+                                                  ReturnToCountriesList(),
+                                                );
+                                              },
+                                            );
                                           });
-                                      bloc.add(LoadCountryDetail(country.name));
+
+                                      // Delay BLoC state change to avoid interfering with hero animation
+                                      Future.delayed(
+                                        const Duration(milliseconds: 200),
+                                        () {
+                                          bloc.add(
+                                            LoadCountryDetail(country.name),
+                                          );
+                                        },
+                                      );
                                     },
                                   ),
                                 );
