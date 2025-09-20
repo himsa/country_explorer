@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/countries_bloc.dart';
 import '../bloc/countries_event.dart';
 import '../bloc/countries_state.dart';
+import '../bloc/navigation_bloc.dart';
 
 class CountryDetailPage extends StatefulWidget {
   final String name;
@@ -13,7 +14,14 @@ class CountryDetailPage extends StatefulWidget {
 }
 
 class _CountryDetailPageState extends State<CountryDetailPage> {
-  String? _cachedFlagEmoji;
+  String _flagEmoji = '🏳️';
+
+  @override
+  void initState() {
+    super.initState();
+    // Request cached flag emoji from NavigationBloc
+    context.read<NavigationBloc>().add(RequestCachedFlagEmoji(widget.name));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,34 +45,27 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
           ),
         ],
       ),
-      body: BlocBuilder<CountriesBloc, CountriesState>(
-        builder: (context, state) {
-          // Cache flag emoji from countries list on first load
-          if (_cachedFlagEmoji == null && state is CountriesLoaded) {
-            try {
-              final country = state.countries.firstWhere(
-                (c) => c.name == widget.name,
-              );
-              _cachedFlagEmoji = country.flagEmoji;
-            } catch (e) {
-              // If not found, try to get from any available country as fallback
-              if (state.countries.isNotEmpty) {
-                _cachedFlagEmoji = state.countries.first.flagEmoji;
-              }
-            }
+      body: BlocListener<NavigationBloc, NavigationState>(
+        listener: (context, state) {
+          if (state is FlagEmojiProvided) {
+            setState(() {
+              _flagEmoji = state.flagEmoji;
+            });
           }
-
-          // Use cached flag emoji or fallback to default
-          final flagEmoji = _cachedFlagEmoji ?? '🏳️';
-
-          return CustomScrollView(
-            slivers: [
-              // Always show hero widget immediately for animation
-              _buildSliverAppBar(context, theme, flagEmoji),
-              SliverFillRemaining(child: _buildContent(context, state, theme)),
-            ],
-          );
         },
+        child: BlocBuilder<CountriesBloc, CountriesState>(
+          builder: (context, state) {
+            return CustomScrollView(
+              slivers: [
+                // Always show hero widget immediately for animation
+                _buildSliverAppBar(context, theme, _flagEmoji),
+                SliverFillRemaining(
+                  child: _buildContent(context, state, theme),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

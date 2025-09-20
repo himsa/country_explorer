@@ -8,6 +8,7 @@ import 'features/countries/data/repositories/countries_repository_impl.dart';
 import 'features/countries/domain/repositories/countries_repository.dart';
 import 'features/countries/domain/usecases/get_countries.dart';
 import 'features/countries/domain/usecases/get_country_detail.dart';
+import 'features/countries/presentation/bloc/navigation_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -30,4 +31,6 @@ Future<void> configureDependencies() async {
 
   sl.registerLazySingleton<GetCountries>(() => GetCountries(sl()));
   sl.registerLazySingleton<GetCountryDetail>(() => GetCountryDetail(sl()));
+
+  sl.registerLazySingleton<NavigationBloc>(() => NavigationBloc());
 }

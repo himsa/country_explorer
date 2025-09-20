@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/countries/presentation/bloc/countries_event.dart';
 import 'features/countries/presentation/pages/countries_list_page.dart';
 import 'features/countries/presentation/bloc/countries_bloc.dart';
+import 'features/countries/presentation/bloc/navigation_bloc.dart';
 import 'features/countries/domain/usecases/get_countries.dart';
 import 'features/countries/domain/usecases/get_country_detail.dart';
 import 'injection_container.dart';
@@ -40,11 +41,23 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: BlocProvider(
-        create: (_) => CountriesBloc(
-          getCountries: sl<GetCountries>(),
-          getCountryDetail: sl<GetCountryDetail>(),
-        )..add(LoadCountries()),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => sl<NavigationBloc>()),
+          BlocProvider(
+            create: (context) {
+              final countriesBloc = CountriesBloc(
+                getCountries: sl<GetCountries>(),
+                getCountryDetail: sl<GetCountryDetail>(),
+              );
+              // Connect CountriesBloc with NavigationBloc
+              final navigationBloc = context.read<NavigationBloc>();
+              countriesBloc.setNavigationBloc(navigationBloc);
+              countriesBloc.add(LoadCountries());
+              return countriesBloc;
+            },
+          ),
+        ],
         child: const CountriesListPage(),
       ),
     );

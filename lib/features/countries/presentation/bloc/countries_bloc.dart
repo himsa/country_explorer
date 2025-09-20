@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'countries_event.dart';
 import 'countries_state.dart';
+import 'navigation_bloc.dart';
 import '../../domain/usecases/get_countries.dart';
 import '../../domain/usecases/get_country_detail.dart';
 import '../../domain/entities/country.dart';
@@ -9,6 +10,7 @@ import '../../../../core/usecases/usecase.dart';
 class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
   final GetCountries getCountries;
   final GetCountryDetail getCountryDetail;
+  NavigationBloc? _navigationBloc;
 
   // Preserve countries list when navigating to detail
   List<Country> _preservedCountries = [];
@@ -21,6 +23,11 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     on<ReturnToCountriesList>(_onReturnToCountriesList);
   }
 
+  // Set navigation bloc reference
+  void setNavigationBloc(NavigationBloc navigationBloc) {
+    _navigationBloc = navigationBloc;
+  }
+
   Future<void> _onLoadCountries(
     LoadCountries event,
     Emitter<CountriesState> emit,
@@ -31,6 +38,14 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
       countries,
     ) {
       _preservedCountries = countries;
+      // Cache flag emojis in NavigationBloc
+      if (_navigationBloc != null) {
+        final flagEmojis = <String, String>{};
+        for (final country in countries) {
+          flagEmojis[country.name] = country.flagEmoji;
+        }
+        _navigationBloc!.cacheFlagEmojis(flagEmojis);
+      }
       emit(CountriesLoaded(countries));
     });
   }
