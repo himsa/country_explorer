@@ -6,6 +6,9 @@ import '../bloc/countries_state.dart';
 import '../../../../core/navigation/navigation_bloc.dart';
 import '../../../../core/navigation/navigation_event.dart';
 import '../../../../core/navigation/navigation_state.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../widgets/coat_of_arms_image.dart';
 
 class CountryDetailPage extends StatefulWidget {
   final String name;
@@ -30,14 +33,6 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: BlocListener<NavigationBloc, NavigationState>(
         listener: (context, state) {
           if (state is FlagEmojiProvided) {
@@ -94,7 +89,7 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
               color: theme.colorScheme.primary,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Text(
             'Loading country details...',
             style: theme.textTheme.titleMedium?.copyWith(
@@ -148,10 +143,8 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
                 Icons.translate_rounded,
               ),
           ]),
-          if (state.country.coatOfArmsUrl != null) ...[
-            const SizedBox(height: 16),
-            _buildCoatOfArmsCard(context, state.country.coatOfArmsUrl!),
-          ],
+          const SizedBox(height: 8),
+          CoatOfArmsImage(imageUrl: state.country.coatOfArmsUrl, height: 160),
         ],
       ),
     );
@@ -224,44 +217,56 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
     String flagEmoji,
   ) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 140,
       pinned: true,
-      automaticallyImplyLeading: false,
+      title: Text(
+        widget.name,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          color: AppColors.textPrimary,
+          letterSpacing: -0.5,
+        ),
+      ),
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      centerTitle: true,
+      foregroundColor: AppColors.textPrimary,
       flexibleSpace: FlexibleSpaceBar(
+        centerTitle: true,
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                theme.primaryColor.withValues(alpha: 0.1),
-                theme.primaryColor.withValues(alpha: 0.05),
-              ],
+              colors: AppColors.backgroundGradient,
             ),
           ),
-          child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80),
             child: Hero(
               tag: 'flag-${widget.name}',
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  width: 120,
-                  height: 80,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.dividerColor, width: 1),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.flagBorderRadius,
+                    ),
+                    border: Border.all(color: AppColors.border, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: AppColors.shadowWithOpacity,
+                        blurRadius: 12, // Increased shadow
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Center(
                     child: Text(
                       flagEmoji,
-                      style: const TextStyle(fontSize: 48),
+                      style: const TextStyle(fontSize: 64), // Increased from 48
                     ),
                   ),
                 ),
@@ -348,114 +353,6 @@ class _CountryDetailPageState extends State<CountryDetailPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCoatOfArmsCard(BuildContext context, String imageUrl) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withValues(
-                      alpha: 0.3,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.emoji_events_rounded,
-                    size: 20,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Coat of Arms',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 160,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor, width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                            : null,
-                        strokeWidth: 2,
-                        color: theme.colorScheme.primary,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer
-                                  .withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.image_not_supported_rounded,
-                              size: 32,
-                              color: theme.colorScheme.error,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Failed to load image',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
       ),
     );
   }

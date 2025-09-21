@@ -1,5 +1,5 @@
 name: countries_explorer
-description: "A new Flutter project."
+description: "A modern Flutter mobile app for exploring countries with Clean Architecture and BLoC pattern."
 publish_to: 'none'
 
 version: 1.0.0+1

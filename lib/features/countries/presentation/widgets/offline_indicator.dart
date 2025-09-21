@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
+/// Offline indicator widget with improved visibility
+///
+/// Shows a clear, visible indicator when the app is offline
+/// with proper contrast and sizing for better user experience.
 class OfflineIndicator extends StatelessWidget {
+  /// Whether the app is currently offline
   final bool isOffline;
+
+  /// Custom message to display (optional)
   final String? message;
 
   const OfflineIndicator({super.key, required this.isOffline, this.message});
@@ -16,50 +24,76 @@ class OfflineIndicator extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withValues(alpha: 0.9),
+        color: AppColors.errorBackground,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.error.withValues(alpha: 0.3),
+            color: AppColors.error.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.errorWithOpacity,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
+          // Enhanced icon container with better visibility
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+              color: AppColors.error,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.errorWithOpacity,
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
-            child: Icon(
+            child: const Icon(
               Icons.wifi_off_rounded,
-              size: 16,
-              color: theme.colorScheme.error,
+              size: 20, // Increased from 16 to 20
+              color: Colors.white, // White icon for better contrast
             ),
           ),
           const SizedBox(width: 12),
+          // Enhanced text with better contrast
           Expanded(
             child: Text(
               message ?? 'You are offline. Showing cached data.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onErrorContainer,
-                fontWeight: FontWeight.w500,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.error,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           ),
+          // Enhanced offline badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withValues(alpha: 0.1),
+              color: AppColors.error,
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.errorWithOpacity,
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
             child: Text(
               'OFFLINE',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.error,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                fontSize: 11,
               ),
             ),
           ),

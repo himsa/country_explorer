@@ -7,14 +7,42 @@ import '../../domain/usecases/get_country_detail.dart';
 import '../../domain/entities/country.dart';
 import '../../../../core/usecases/usecase.dart';
 
+/// Main BLoC for managing countries data and state
+///
+/// This BLoC handles all countries-related state management including:
+/// - Loading countries list from API
+/// - Refreshing countries data
+/// - Loading individual country details
+/// - Managing navigation between list and detail views
+/// - Preserving state during navigation
+///
+/// The BLoC follows the coding test requirements by:
+/// - Emitting Loading, Loaded(List[Country]), and Error states
+/// - Coordinating with NavigationBloc for navigation
+/// - Preserving countries list during detail navigation
+/// - Handling both success and failure scenarios
 class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
+  /// Use case for fetching all countries
   final GetCountries getCountries;
+
+  /// Use case for fetching individual country details
   final GetCountryDetail getCountryDetail;
+
+  /// Reference to NavigationBloc for coordinating navigation
   NavigationBloc? _navigationBloc;
 
-  // Preserve countries list when navigating to detail
+  /// Preserved countries list for navigation state management
+  /// This ensures the countries list is maintained when navigating
+  /// between the list view and detail view
   List<Country> _preservedCountries = [];
 
+  /// Creates a new CountriesBloc instance
+  ///
+  /// Registers all event handlers for the BLoC:
+  /// - LoadCountries: Initial load of countries list
+  /// - RefreshCountries: Pull-to-refresh functionality
+  /// - LoadCountryDetail: Load individual country details
+  /// - ReturnToCountriesList: Return from detail to list view
   CountriesBloc({required this.getCountries, required this.getCountryDetail})
     : super(CountriesInitial()) {
     on<LoadCountries>(_onLoadCountries);
@@ -23,11 +51,22 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     on<ReturnToCountriesList>(_onReturnToCountriesList);
   }
 
-  // Set navigation bloc reference
+  /// Sets the NavigationBloc reference for coordination
+  ///
+  /// This method establishes the connection between CountriesBloc
+  /// and NavigationBloc for proper navigation state management.
   void setNavigationBloc(NavigationBloc navigationBloc) {
     _navigationBloc = navigationBloc;
   }
 
+  /// Handles the LoadCountries event
+  ///
+  /// This method:
+  /// 1. Emits CountriesLoading state
+  /// 2. Calls the GetCountries use case
+  /// 3. Handles success/failure scenarios
+  /// 4. Caches flag emojis in NavigationBloc for navigation
+  /// 5. Preserves countries list for navigation state management
   Future<void> _onLoadCountries(
     LoadCountries event,
     Emitter<CountriesState> emit,
@@ -38,7 +77,7 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
       countries,
     ) {
       _preservedCountries = countries;
-      // Cache flag emojis in NavigationBloc
+      // Cache flag emojis in NavigationBloc for hero animations
       if (_navigationBloc != null) {
         final flagEmojis = <String, String>{};
         for (final country in countries) {
@@ -50,6 +89,13 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     });
   }
 
+  /// Handles the RefreshCountries event (pull-to-refresh)
+  ///
+  /// This method:
+  /// 1. Preserves current countries list during loading
+  /// 2. Calls the GetCountries use case for fresh data
+  /// 3. Handles success/failure scenarios
+  /// 4. Updates preserved countries list
   Future<void> _onRefreshCountries(
     RefreshCountries event,
     Emitter<CountriesState> emit,
@@ -70,6 +116,14 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     });
   }
 
+  /// Handles the LoadCountryDetail event
+  ///
+  /// This method:
+  /// 1. Preserves current countries list for navigation
+  /// 2. Emits loading state with preserved countries
+  /// 3. Calls the GetCountryDetail use case
+  /// 4. Handles success/failure scenarios
+  /// 5. Emits CountryDetailLoaded state with both country and countries list
   Future<void> _onLoadCountryDetail(
     LoadCountryDetail event,
     Emitter<CountriesState> emit,
@@ -99,6 +153,13 @@ class CountriesBloc extends Bloc<CountriesEvent, CountriesState> {
     );
   }
 
+  /// Handles the ReturnToCountriesList event
+  ///
+  /// This method:
+  /// 1. Restores the preserved countries list if available
+  /// 2. Falls back to loading from cache if no preserved countries
+  /// 3. Handles success/failure scenarios
+  /// 4. Emits CountriesLoaded state with cache indication
   Future<void> _onReturnToCountriesList(
     ReturnToCountriesList event,
     Emitter<CountriesState> emit,

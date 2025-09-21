@@ -6,6 +6,8 @@ import '../bloc/countries_state.dart';
 import '../../../../core/navigation/navigation_bloc.dart';
 import '../../../../core/navigation/navigation_event.dart';
 import '../../../../core/navigation/navigation_state.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../widgets/offline_indicator.dart';
 import 'country_detail_page.dart';
 
@@ -69,6 +71,15 @@ class CountriesListPage extends StatelessWidget {
           ],
           backgroundColor: Colors.transparent,
           elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.white, const Color(0xFFF8FAFC)],
+              ),
+            ),
+          ),
         ),
         body: Column(
           children: [
@@ -113,15 +124,35 @@ class CountriesListPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(24),
+                              padding: const EdgeInsets.all(32),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer
-                                    .withValues(alpha: 0.1),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    const Color(
+                                      0xFF6366F1,
+                                    ).withValues(alpha: 0.1),
+                                    const Color(
+                                      0xFF8B5CF6,
+                                    ).withValues(alpha: 0.1),
+                                  ],
+                                ),
                                 shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF6366F1,
+                                    ).withValues(alpha: 0.2),
+                                    blurRadius: 20,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
                               ),
                               child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: theme.colorScheme.primary,
+                                strokeWidth: 4,
+                                color: const Color(0xFF6366F1),
+                                backgroundColor: const Color(0xFFE2E8F0),
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -198,17 +229,35 @@ class CountriesListPage extends StatelessWidget {
                                     const SizedBox(height: 8),
                                 itemBuilder: (context, index) {
                                   final country = countries[index];
-                                  return Card(
-                                    elevation: 0,
-                                    color: theme
-                                        .colorScheme
-                                        .surfaceContainerHighest
-                                        .withValues(alpha: 0.3),
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: AppConstants.defaultPadding,
+                                      vertical: AppConstants.cardMargin,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.surface,
+                                      borderRadius: BorderRadius.circular(
+                                        AppConstants.largeRadius,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.shadowWithOpacity,
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                        BoxShadow(
+                                          color:
+                                              AppColors.shadowLightWithOpacity,
+                                          blurRadius: 16,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
                                     child: ListTile(
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 12,
+                                            horizontal: 20,
+                                            vertical: 16,
                                           ),
                                       leading: Hero(
                                         tag: 'flag-${country.name}',
@@ -230,12 +279,32 @@ class CountriesListPage extends StatelessWidget {
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                            12,
+                                                            AppConstants
+                                                                .flagBorderRadius,
                                                           ),
-                                                      border: Border.all(
-                                                        color: Colors.grey,
-                                                        width: 1,
+                                                      gradient: LinearGradient(
+                                                        begin:
+                                                            Alignment.topLeft,
+                                                        end: Alignment
+                                                            .bottomRight,
+                                                        colors: AppColors
+                                                            .flagGradient,
                                                       ),
+                                                      border: Border.all(
+                                                        color: AppColors.border,
+                                                        width: 1.5,
+                                                      ),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: AppColors
+                                                              .shadowLightWithOpacity,
+                                                          blurRadius: 4,
+                                                          offset: const Offset(
+                                                            0,
+                                                            1,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                     child: Center(
                                                       child: Text(
@@ -342,16 +411,31 @@ class CountriesListPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(24),
+                                padding: const EdgeInsets.all(32),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.errorContainer
-                                      .withValues(alpha: 0.1),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      const Color(0xFFFEF2F2),
+                                      const Color(0xFFFEE2E2),
+                                    ],
+                                  ),
                                   shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFFDC2626,
+                                      ).withValues(alpha: 0.1),
+                                      blurRadius: 20,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
                                 ),
                                 child: Icon(
                                   Icons.error_outline_rounded,
                                   size: 48,
-                                  color: theme.colorScheme.error,
+                                  color: const Color(0xFFDC2626),
                                 ),
                               ),
                               const SizedBox(height: 24),
